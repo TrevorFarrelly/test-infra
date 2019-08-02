@@ -38,8 +38,7 @@ const (
 
 var (
 	identifier      = "<!--AUTOMATED-FLAKY-RETRYER-->"
-	commentTemplate = "%s\nThe following tests are currently flaky. Running them again to verify..." +
-		"\n\nTest name | Retries\n--- | ---\n%s\n\n%s"
+	commentTemplate = "%s\nThe following jobs failed due to test flakiness:\n\nTest name | Retries\n--- | ---\n%s\n\n%s"
 )
 
 // GithubClient wraps the ghutil Github client
