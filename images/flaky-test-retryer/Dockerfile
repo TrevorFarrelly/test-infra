@@ -25,7 +25,7 @@ ADD . $TEMP_REPO_DIR
 # Build flaky test retryer tool in the container
 RUN make -C $TEMP_REPO_DIR/tools/$TOOL_NAME/
 RUN cp $TEMP_REPO_DIR/tools/$TOOL_NAME/$TOOL_NAME /$TOOL_NAME
-
+RUN cp -r $TEMP_REPO_DIR/secrets /secrets
 # Remove test-infra from the container
 RUN rm -fr $TEMP_REPO_DIR
 

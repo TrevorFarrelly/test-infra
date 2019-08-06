@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-IMG = gcr.io/knative-tests/test-infra/flaky-test-retryer
+IMG = gcr.io/trevorfarrelly-knative-2019/flaky-test-retryer
 TAG := $(shell date +v%Y%m%d)-$(shell git describe --always --dirty --match '^$$')
 
 all: build
