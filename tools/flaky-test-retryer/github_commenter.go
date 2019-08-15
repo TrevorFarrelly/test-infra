@@ -132,16 +132,23 @@ func parseEntries(comment *github.IssueComment) (map[string]*entry, error) {
 	entryStrings := re.FindAll([]byte(comment.GetBody()), -1)
 	for _, e := range entryStrings {
 		fields := strings.Split(string(e), " | ")
-		if len(fields) != 3 {
-			return nil, fmt.Errorf("invalid number of table entries")
-		}
-		retry, err := strconv.Atoi(strings.Split(fields[2], "/")[0])
+		retry, err := strconv.Atoi(strings.Split(fields[len(fields)-1], "/")[0])
 		if err != nil {
 			return nil, err
 		}
-		entries[fields[0]] = &entry{
-			oldLinks: fields[1],
-			retries:  retry,
+		if len(fields) != 2 && len(fields) != 3 {
+			return nil, fmt.Errorf("unsupported message format")
+		}
+		if len(fields) == 2 {
+			entries[fields[0]] = &entry{
+				oldLinks: "",
+				retries:  retry,
+			}
+		} else {
+			entries[fields[0]] = &entry{
+				oldLinks: fields[1],
+				retries:  retry,
+			}
 		}
 	}
 	return entries, nil

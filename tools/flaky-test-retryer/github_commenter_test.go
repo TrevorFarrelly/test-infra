@@ -27,6 +27,16 @@ import (
 )
 
 var (
+	outdatedFormatCommentBody = `<!--AUTOMATED-FLAKY-RETRYER-->
+The following tests are currently flaky. Running them again to verify...
+
+Test name | Retries
+--- | ---
+fakejob0 | 0/3
+fakejob1 | 1/3
+
+Automatically retrying...
+/test fakejob1`
 	oldCommentBody = `<!--AUTOMATED-FLAKY-RETRYER-->
 The following jobs failed due to test flakiness:
 
@@ -167,6 +177,11 @@ func TestParseEntries(t *testing.T) {
 		want  map[string]*entry
 	}{
 		{fakeOldComment, map[string]*entry{"fakejob0": &entry{"", 0}, "fakejob1": &entry{"[]()", 1}}},
+		{&github.IssueComment{
+			ID:   &fakeCommentID,
+			Body: &outdatedFormatCommentBody,
+			User: fakeUser,
+		}, map[string]*entry{"fakejob0": &entry{"", 0}, "fakejob1": &entry{"", 1}}},
 	}
 	for _, data := range cases {
 		actual, _ := parseEntries(data.input)
