@@ -139,7 +139,7 @@ func writeToCSV(data Data) error {
 
 func main() {
 	githubToken := flag.String("github-account", "", "Github token file")
-	timeRange := flag.String("since", "2019-07-01", "date to collect data after, or time range to collect data from (e.g. 24h)")
+	timeRange := flag.String("since", "2019-07-01", "date or time.Duration ago to collect data from")
 	flag.Parse()
 
 	client := getClient(*githubToken, *timeRange)

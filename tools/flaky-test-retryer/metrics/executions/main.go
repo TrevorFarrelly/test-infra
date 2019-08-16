@@ -38,25 +38,30 @@ type Status struct {
 }
 
 // get a client to handle our API requests
-func getClient(githubToken, timeRange string) *Client {
+func getClient(githubToken, timeString string) *Client {
 	github, err := ghutil.NewGithubClient(githubToken)
 	if err != nil {
 		log.Fatalf("GitHub auth error: %v", err)
 	}
-	startTime, err := parseTime(timeRange)
+	startTime, err := parseTime(timeString)
 	if err != nil {
 		log.Fatalf("Unable to parse time range: %v", err)
 	}
 	log.Printf("Scanning PRs since %s", startTime.Format("2 Jan 2006 15:04:05"))
 	return &Client{github, startTime}
 }
-// determine start time based on a duration of time to look back from now
-func parseTime(timeRange string) (*time.Time, error) {
-	duration, err := time.ParseDuration("-"+timeRange)
+// determine start time, either via a date or a time period to look back
+func parseTime(timeString string) (*time.Time, error) {
+	// try to parse as time
+	startTime, err := time.Parse("2006-01-02", timeString)
 	if err != nil {
-		return nil, err
+		// try to parse as duration
+		duration, err := time.ParseDuration("-"+timeString)
+		if err != nil {
+			return nil, err
+		}
+		startTime = time.Now().Add(duration)
 	}
-	startTime := time.Now().Add(duration)
 	return &startTime, nil
 }
 
@@ -198,7 +203,7 @@ func (c *Client) writeToCSV(data []*Data) error {
 
 func main() {
 	githubToken := flag.String("github-account", "", "Github token file")
-	timeRange := flag.String("range", "24h", "amount of time to show results from")
+	timeRange := flag.String("since", "2019-08-02", "date or time.Duration ago to collect data from")
 	flag.Parse()
 
 	client := getClient(*githubToken, *timeRange)
